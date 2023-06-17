@@ -1,0 +1,18 @@
+{
+  "name": "krishmart",
+  "version": "1.0.0",
+  "description": "Explore and Experience the Ecommerce\r yes\r howz is it",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "frontend": "cd frontend && npm start",
+    "backend": "cd backend && npm start",
+    "strapi": "cd strapi && npm start",
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\" \"npm run strapi\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
