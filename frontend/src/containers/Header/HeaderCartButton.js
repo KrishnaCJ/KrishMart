@@ -41,8 +41,9 @@ const HeaderCartButton = (props) => {
           </button>
         </Link>
       )}
-
-      <button className={classes.button2}>sign In</button>
+      <Link to="/signup">
+        <button className={classes.button2}>sign In</button>
+      </Link>
     </>
   );
 };

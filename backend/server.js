@@ -1,6 +1,7 @@
 //jshint esversion:6
 const cors = require("cors");
 const express = require("express");
+const mongoose = require("mongoose");
 require("dotenv").config();
 //TODO:add a stripe key
 const stripe = require("stripe")(process.env.SECRET_KEY);
@@ -10,15 +11,25 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+mongoose
+  .connect(process.env.DB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("connected to MongoDB"))
+  .catch((err) => console.error(err));
 //routes
+app.use("/api/auth", require("./routes/auth"));
+
 app.get("/", (req, res) => {
   res.send("It works at learning");
 });
 
 app.post("/payment", (req, res) => {
-  const { product, token } = req.body;
-  console.log("PRODUCT", product);
-  console.log("PRICE", product.price);
+  console.log("server>>", req);
+  const { total, token } = req.body;
+  console.log("token", token);
+  console.log("PRICE", amount);
 
   return stripe.customers
     .create({
@@ -28,7 +39,7 @@ app.post("/payment", (req, res) => {
     .then((customer) => {
       stripe.paymentIntents
         .create({
-          amount: product.price * 100,
+          amount: total,
           currency: "USD",
           customer: customer.id,
           receipt_email: token.email,
@@ -43,4 +54,4 @@ app.post("/payment", (req, res) => {
 });
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () => console.log(`server listening on port ${port}!`));

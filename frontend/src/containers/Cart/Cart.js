@@ -9,6 +9,7 @@ import {
 } from "../../redux/actions/productActions";
 import StripeCheckout from "react-stripe-checkout";
 import Swal from "sweetalert2";
+import axios from "axios";
 import withReactContent from "sweetalert2-react-content";
 
 const MySwal = withReactContent(Swal);
@@ -22,11 +23,10 @@ const Cart = (props) => {
   };
 
   const total = cartItems.reduce(addition, 0).toFixed(2);
-  const [product, setProduct] = useState({
-    name: "Stripe payment",
-    price: total,
-    ProductBy: "stripefromFB",
-  });
+  console.log("cart>>total", total);
+  // const [product, setProduct] = useState({
+  //   total,
+  // });
 
   const handleSuccess = () => {
     MySwal.fire({
@@ -35,21 +35,23 @@ const Cart = (props) => {
     });
   };
 
-  const makePayment = (token, product) => {
+  const makePayment = (token) => {
+    console.log("checkout>>token", token);
+
     const body = {
       token,
-      product,
+      total,
     };
 
     const headers = {
       "Content-Type": "application/json",
     };
 
-    return fetch(`http://localhost:8282/payment`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-    })
+    const response = axios
+      .post("http://localhost:8282/payment", {
+        headers,
+        body: JSON.stringify(body),
+      })
       .then((response) => {
         console.log("Krishna RESPONSE", response);
         const { status } = response;
@@ -62,6 +64,8 @@ const Cart = (props) => {
       .catch((err) => {
         console.log(err);
       });
+
+    return response;
   };
 
   return (
@@ -118,9 +122,9 @@ const Cart = (props) => {
         {total > 1 && (
           <StripeCheckout
             stripeKey={process.env.REACT_APP_STRIPEKEY}
+            amount={total * 100}
             token={makePayment}
             name="Buy Stripe React"
-            amount={total * 100}
           />
         )}
         {/* {total > 1 && (
